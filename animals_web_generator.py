@@ -2,46 +2,110 @@ import json
 
 
 def load_data(file_path):
-  """ Loads a JSON file """
-  with open(file_path, "r") as handle:
-    return json.load(handle)
-
-animals_data = load_data('animals_data.json')
+    """ Loads data from the JSON file """
+    with open(file_path, "r") as handle:
+        return json.load(handle)
 
 
-def print_animals_info(data):
+def load_template(file_path):
     """
-    Print selected information about each animal.
+    Load HTML template content from a file.
     """
-    for animal in data:
-        if "name" in animal:
-            print(f"Name: {animal["name"]}")
+    with open(file_path, "r") as file:
+        return file.read()
 
-        if "characteristics" in animal and animal["characteristics"]:
-            characteristics = animal["characteristics"]
+
+
+def generate_animals_info_string(data):
+    """
+    Generate a formatted string containing the required animals information.
+    """
+    output = ""
+    for animal_data in data:
+        # Add Name
+        if "name" in animal_data:
+            output += f"Name: {animal_data['name']}\n"
+
+        # Extract characteristics - dictionary
+        if "characteristics" in animal_data and animal_data["characteristics"]:
+            characteristics = animal_data["characteristics"]
         else:
             characteristics = {}
 
+        # Add Diet -if it exists
         if "diet" in characteristics:
-            print(f"Diet: {characteristics['diet']}")
+            output += f"Diet: {characteristics['diet']}\n"
 
-        if "locations" in animal and len(animal["locations"]) > 0:
-            print(f"Location: {animal['locations'][0]}")
+        # Add first Location - if it exists
+        if "locations" in animal_data and len(animal_data["locations"]) > 0:
+            output += f"Location: {animal_data['locations'][0]}\n"
 
+        # Add Type - if it exists
         if "type" in characteristics:
-            print(f"Type: {characteristics['type']}")
+            output += f"Type: {characteristics['type']}\n"
 
-        print("\n")
+        # adding an extra line between animals for better readability
+        output += "\n"
+    return output
+
+def write_html(output_string, template_string, output_file):
+    """
+    Replace the placeholder in the template with the output string
+    and write to a new HTML file.
+    """
+    html_content = template_string.replace("__REPLACE_ANIMALS_INFO__", output_string)
+    with open(output_file, "w") as file:
+        file.write(html_content)
 
 def main():
-    """
-    Main function to load animal data and print animal info.
-    """
-    animals_data = load_data('animals_data.json')
-    print_animals_info(animals_data)
+    animals_data = load_data("animals_data.json")
+    template = load_template("animals_template.html")
+    animals_info_str = generate_animals_info_string(animals_data)
+    write_html(animals_info_str, template, "animals.html")
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+# animals_data = load_data('animals_data.json')
+#
+#
+# def print_animals_info(data):
+#     """
+#     Print selected information about each animal.
+#     """
+#     for animal in data:
+#         if "name" in animal:
+#             print(f"Name: {animal["name"]}")
+#
+#         if "characteristics" in animal and animal["characteristics"]:
+#             characteristics = animal["characteristics"]
+#         else:
+#             characteristics = {}
+#
+#         if "diet" in characteristics:
+#             print(f"Diet: {characteristics['diet']}")
+#
+#         if "locations" in animal and len(animal["locations"]) > 0:
+#             print(f"Location: {animal['locations'][0]}")
+#
+#         if "type" in characteristics:
+#             print(f"Type: {characteristics['type']}")
+#
+#         print("\n")
+#
+# def main():
+#     """
+#     Main function to load animal data and print animal info.
+#     """
+#     animals_data = load_data('animals_data.json')
+#     print_animals_info(animals_data)
+#
+# if __name__ == "__main__":
+#     main()
 
 
 
