@@ -15,36 +15,61 @@ def load_template(file_path):
         return file.read()
 
 
-
 def generate_animals_info_string(data):
     """
-    Generate an HTML-formatted string containing the required animals' information.
+    Generate an HTML-formatted string containing the required animals' information,
+    with full semantic structure.
     """
     output = ""
     for animal in data:
-        output += '<li class="cards__item">\n'
-
-        # Name
-        if "name" in animal:
-            output += f"Name: {animal['name']}<br/>\n"
-
-        # Extract characteristics - dictionary
+        name = animal["name"] if "name" in animal else "Unknown"
         characteristics = animal["characteristics"] if "characteristics" in animal else {}
+        diet = characteristics["diet"] if "diet" in characteristics else "Unknown"
+        location = animal["locations"][0] if "locations" in animal and animal["locations"] else "Unknown"
+        animal_type = characteristics["type"] if "type" in characteristics else "Unknown"
 
-        # Add Diet -if it exists
-        if "diet" in characteristics:
-            output += f"Diet: {characteristics['diet']}<br/>\n"
+        output += '<li class="cards__item">\n'
+        output += f'  <div class="card__title">{name}</div>\n'
+        output += '  <p class="card__text">\n'
+        output += f'    <strong>Diet:</strong> {diet}<br/>\n'
+        output += f'    <strong>Location:</strong> {location}<br/>\n'
+        output += f'    <strong>Type:</strong> {animal_type}<br/>\n'
+        output += '  </p>\n'
+        output += '</li>\n'
 
-        # Add first Location - if it exists
-        if "locations" in animal and len(animal["locations"]) > 0:
-            output += f"Location: {animal['locations'][0]}<br/>\n"
-
-        # Add Type - if it exists
-        if "type" in characteristics:
-            output += f"Type: {characteristics['type']}<br/>\n"
-
-        output += "</li>\n"
     return output
+
+
+
+# def generate_animals_info_string(data):
+#     """
+#     Generate an HTML-formatted string containing the required animals' information.
+#     """
+#     output = ""
+#     for animal in data:
+#         output += '<li class="cards__item">\n'
+#
+#         # Name
+#         if "name" in animal:
+#             output += f"Name: {animal['name']}<br/>\n"
+#
+#         # Extract characteristics - dictionary
+#         characteristics = animal["characteristics"] if "characteristics" in animal else {}
+#
+#         # Add Diet -if it exists
+#         if "diet" in characteristics:
+#             output += f"Diet: {characteristics['diet']}<br/>\n"
+#
+#         # Add first Location - if it exists
+#         if "locations" in animal and len(animal["locations"]) > 0:
+#             output += f"Location: {animal['locations'][0]}<br/>\n"
+#
+#         # Add Type - if it exists
+#         if "type" in characteristics:
+#             output += f"Type: {characteristics['type']}<br/>\n"
+#
+#         output += "</li>\n"
+#     return output
 
 
 
