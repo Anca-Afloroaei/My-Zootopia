@@ -3,7 +3,7 @@ import json
 
 def load_data(file_path):
     """ Loads data from the JSON file """
-    with open(file_path, "r") as handle:
+    with open(file_path, "r", encoding="utf-8") as handle:
         return json.load(handle)
 
 
@@ -11,57 +11,90 @@ def load_template(file_path):
     """
     Load HTML template content from a file.
     """
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
 
 
 
 def generate_animals_info_string(data):
     """
-    Generate a formatted string containing the required animals information.
+    Generate an HTML-formatted string containing the required animals' information.
     """
     output = ""
-    for animal_data in data:
-        # Add Name
-        if "name" in animal_data:
-            output += f"Name: {animal_data['name']}\n"
+    for animal in data:
+        output += '<li class="cards__item">\n'
+
+        # Name
+        if "name" in animal:
+            output += f"Name: {animal['name']}<br/>\n"
 
         # Extract characteristics - dictionary
-        if "characteristics" in animal_data and animal_data["characteristics"]:
-            characteristics = animal_data["characteristics"]
-        else:
-            characteristics = {}
+        characteristics = animal["characteristics"] if "characteristics" in animal else {}
 
         # Add Diet -if it exists
         if "diet" in characteristics:
-            output += f"Diet: {characteristics['diet']}\n"
+            output += f"Diet: {characteristics['diet']}<br/>\n"
 
         # Add first Location - if it exists
-        if "locations" in animal_data and len(animal_data["locations"]) > 0:
-            output += f"Location: {animal_data['locations'][0]}\n"
+        if "locations" in animal and len(animal["locations"]) > 0:
+            output += f"Location: {animal['locations'][0]}<br/>\n"
 
         # Add Type - if it exists
         if "type" in characteristics:
-            output += f"Type: {characteristics['type']}\n"
+            output += f"Type: {characteristics['type']}<br/>\n"
 
-        # adding an extra line between animals for better readability
-        output += "\n"
+        output += "</li>\n"
     return output
 
-def write_html(output_string, template_string, output_file):
+
+
+
+# def generate_animals_info_string(data):
+#     """
+#     Generate a formatted string containing the required animals' information.
+#     """
+#     output = ""
+#     for animal_data in data:
+#         # Add Name
+#         if "name" in animal_data:
+#             output += f"Name: {animal_data['name']}\n"
+#
+#         # Extract characteristics - dictionary
+#         if "characteristics" in animal_data and animal_data["characteristics"]:
+#             characteristics = animal_data["characteristics"]
+#         else:
+#             characteristics = {}
+#
+#         # Add Diet -if it exists
+#         if "diet" in characteristics:
+#             output += f"Diet: {characteristics['diet']}\n"
+#
+#         # Add first Location - if it exists
+#         if "locations" in animal_data and len(animal_data["locations"]) > 0:
+#             output += f"Location: {animal_data['locations'][0]}\n"
+#
+#         # Add Type - if it exists
+#         if "type" in characteristics:
+#             output += f"Type: {characteristics['type']}\n"
+#
+#         # adding an extra line between animals for better readability
+#         output += "\n"
+#     return output
+
+def build_html_page(output_string, template_string, output_file):
     """
     Replace the placeholder in the template with the output string
     and write to a new HTML file.
     """
     html_content = template_string.replace("__REPLACE_ANIMALS_INFO__", output_string)
-    with open(output_file, "w") as file:
+    with open(output_file, "w", encoding="utf-8") as file:
         file.write(html_content)
 
 def main():
     animals_data = load_data("animals_data.json")
     template = load_template("animals_template.html")
     animals_info_str = generate_animals_info_string(animals_data)
-    write_html(animals_info_str, template, "animals.html")
+    build_html_page(animals_info_str, template, "animals.html")
 
 if __name__ == "__main__":
     main()
